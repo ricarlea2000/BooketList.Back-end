@@ -226,26 +226,13 @@ def search_authors_simple():
     except Exception as e:
         return internal_error(str(e))
 
-@books_bp.route('/authors/popular', methods=['GET'])
-def get_popular_authors():
-    """
-    Obtener autores más populares (con más libros) para la homepage de React
-    """
-    try:
-        # Obtener autores con más libros
-        popular_authors = db.session.query(
-            Author,
-            db.func.count(Book.id_libros).label('total_libros')
-        ).join(Book).group_by(Author.id_autor).order_by(
-            db.func.count(Book.id_libros).desc()
-        ).limit(12).all()  # Top 12 autores
 
-        return jsonify([{
-            'id_autor': author.id_autor,
-            'nombre_completo': f"{author.nombre_autor} {author.apellido_autor}",
-            'total_libros': total_libros,
-            'portada_sample': author.libros[0].enlace_portada_libro if author.libros else None
-        } for author, total_libros in popular_authors]), 200
+@books_bp.route('/authors', methods=['GET'])
+def get_authors():
+    try:
+        author = Author.query.all()
+        return jsonify([autores.serialize() for autores in author]), 200
     
     except Exception as e:
         return internal_error(str(e))
+    
