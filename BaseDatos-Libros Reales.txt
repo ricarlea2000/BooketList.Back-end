@@ -70,6 +70,86 @@
 - **ASIN:** /dp/B091FMWH1Z
 - **Descripción:** Familias aristocráticas rusas viven amores, tragedias y transformaciones durante las guerras napoleónicas en esta épica monumental.
 
+11. Ulises
+
+Autor: James Joyce
+Año de Publicación: 1922
+Imagen de Portada: https://m.media-amazon.com/images/I/91G1mqR54dS._SL1500_.jpg
+ASIN: /dp/8466359400
+Descripción: Un día en la vida de Leopold Bloom en Dublín, obra modernista que revolucionó la literatura con su técnica de flujo de conciencia.
+
+12. Anna Karenina
+
+Autor: León Tolstói
+Año de Publicación: 1877
+Imagen de Portada: https://m.media-amazon.com/images/I/91Jd4RA0A+L._SL1500_.jpg
+ASIN: /dp/8491055185
+Descripción: La trágica historia de Ana, atrapada entre su pasión por Vronsky y las convenciones sociales de la Rusia aristocrática.
+
+13. Madame Bovary
+
+Autor: Gustave Flaubert
+Año de Publicación: 1857
+Imagen de Portada: https://m.media-amazon.com/images/I/61ivxzAGxkL._SL1360_.jpg
+ASIN: /dp/1543018882
+Descripción: Emma Bovary busca romance y pasión fuera de su matrimonio aburrido, llevándola a una espiral de deudas y desilusión.
+
+14. El Extranjero
+
+Autor: Albert Camus
+Año de Publicación: 1942
+Imagen de Portada: https://m.media-amazon.com/images/I/71rWL9HWODL._SL1500_.jpg
+ASIN: /dp/8439737939
+Descripción: Meursault, un hombre emocionalmente distante, comete un asesinato absurdo en la Argelia francesa en esta obra existencialista.
+
+15. Las Aventuras de Tom Sawyer
+
+Autor: Mark Twain
+Año de Publicación: 1876
+Imagen de Portada: https://m.media-amazon.com/images/I/61SETni1pyL._SL1331_.jpg
+ASIN: /dp/B0CHL3RW8P
+Descripción: Las travesuras de un niño ingenioso en el Mississippi, desde presenciar un asesinato hasta buscar tesoros piratas escondidos.
+
+16. Jane Eyre
+
+Autor: Charlotte Brontë
+Año de Publicación: 1847
+Imagen de Portada: https://m.media-amazon.com/images/I/71HFFFVN2+L._SL1500_.jpg
+ASIN: /dp/B01CDIDB02
+Descripción: Una huérfana se convierte en institutriz y se enamora de su empleador, Mr. Rochester, cuyo oscuro secreto amenaza su felicidad.
+
+17. El Proceso
+
+Autor: Franz Kafka
+Año de Publicación: 1925
+Imagen de Portada: https://m.media-amazon.com/images/I/71E8PQ0bN6L._SL1500_.jpg
+ASIN: /dp/8420678198
+Descripción: Josef K es arrestado y procesado por un crimen desconocido en un sistema judicial absurdo y burocrático kafkiano.
+
+18. Grandes Esperanzas
+
+Autor: Charles Dickens
+Año de Publicación: 1861
+Imagen de Portada: https://m.media-amazon.com/images/I/816+kfiuWJL._SL1360_.jpg
+ASIN: /dp/1986946304
+Descripción: Pip, un huérfano pobre, recibe una misteriosa fortuna que transforma su vida pero desafía sus valores sobre clase y amor.
+
+19. Metamorfosis
+
+Autor: Ovidio
+Año de Publicación: 8 d.C.
+Imagen de Portada: https://m.media-amazon.com/images/I/71f6hk9pBFL._SL1360_.jpg
+ASIN: /dp/1470156202
+Descripción: Colección épica de mitos griegos y romanos sobre transformaciones, desde la creación del mundo hasta la deificación de César.
+
+20. El Decamerón
+
+Autor: Giovanni Boccaccio
+Año de Publicación: 1353
+Imagen de Portada: https://m.media-amazon.com/images/I/71nk4Tk9hkL._SL1360_.jpg
+ASIN: /dp/153971070X
+Descripción: Diez jóvenes escapan de la peste negra en Florencia y se entretienen contando cien historias de amor, engaño y aventura.
+
 # Top 10 Libros de No-Ficción
 
 ## 1. Sapiens: De Animales a Dioses
@@ -141,9 +221,89 @@
 - **Imagen de Portada:** https://m.media-amazon.com/images/I/617AqnsUdqL._SL1500_.jpg
 - **ASIN:** /dp/6075695591
 - **Descripción:** Principios fundamentales para el desarrollo personal y profesional que han transformado millones de vidas en todo el mundo.
-# Top 10 Libros de Historia
+
+11. Hábitos Atómicos
+
+Autor: James Clear
+Año de Publicación: 2018
+Imagen de Portada: https://m.media-amazon.com/images/I/713PN1USzXL._SL1228_.jpg
+ASIN: /dp/6075694129
+Descripción: Estrategias prácticas para formar buenos hábitos, romper malos y dominar comportamientos que llevan al éxito duradero.
+
+12. Come, Reza, Ama
+
+Autor: Elizabeth Gilbert
+Año de Publicación: 2006
+Imagen de Portada: https://m.media-amazon.com/images/I/71fG+Rte1IL._SL1500_.jpg
+ASIN: /dp/1644732734
+Descripción: Memorias de una mujer que viaja por Italia, India e Indonesia buscando placer, espiritualidad y equilibrio tras su divorcio.
+
+13. En Defensa de la Comida
+
+Autor: Michael Pollan
+Año de Publicación: 2008
+Imagen de Portada: https://m.media-amazon.com/images/I/71NVcW6g3LL._SL1500_.jpg
+ASIN: /dp/0143114964
+Descripción: Un manifiesto sobre nutrición que resume la alimentación saludable en siete palabras: Come comida, no mucha, principalmente plantas.
+
+14. El Gen: Una Historia Íntima
+
+Autor: Siddhartha Mukherjee
+Año de Publicación: 2016
+Imagen de Portada: https://m.media-amazon.com/images/I/71knXNNQMwL._SL1500_.jpg
+ASIN: /dp/1476733503
+Descripción: La historia de la genética desde Mendel hasta CRISPR, entrelazada con la historia familiar del autor sobre enfermedades mentales.
+
+15. Fuera de Serie
+
+Autor: Malcolm Gladwell
+Año de Publicación: 2008
+Imagen de Portada: https://m.media-amazon.com/images/I/71sDcx7hQyL._SL1500_.jpg
+ASIN: /dp/B0D6XPJRKZ
+Descripción: Explora cómo el éxito excepcional depende más de oportunidades, tiempo de práctica y contexto cultural que del talento puro.
+
+16. El Mundo y Sus Demonios
+
+Autor: Carl Sagan
+Año de Publicación: 1995
+Imagen de Portada: https://m.media-amazon.com/images/I/51b3VxpNhhL._SL1181_.jpg
+ASIN: /dp/8408058193
+Descripción: Una defensa apasionada del pensamiento crítico y el método científico contra la pseudociencia y la superstición moderna.
+
+17. Nacidos para Correr
+
+Autor: Christopher McDougall
+Año de Publicación: 2009
+Imagen de Portada: https://m.media-amazon.com/images/I/812qP+2a1EL._SL1500_.jpg
+ASIN: /dp/030774129X
+Descripción: La búsqueda del autor de los secretos de los Tarahumara, una tribu mexicana de superatletas que corren descalzos.
+
+18. Por Qué Dormimos
+
+Autor: Matthew Walker
+Año de Publicación: 2017
+Imagen de Portada: https://m.media-amazon.com/images/I/61Xf8V-H2uL._SL1200_.jpg
+ASIN: /dp/8412064526
+Descripción: Un neurocientífico revela la ciencia del sueño y su impacto crítico en la salud, aprendizaje y esperanza de vida.
+
+19. Inteligencia Emocional
+
+Autor: Daniel Goleman
+Año de Publicación: 1995
+Imagen de Portada: https://m.media-amazon.com/images/I/71m4GrUv9VL._SL1500_.jpg
+ASIN: /dp/1947783424
+Descripción: Por qué la inteligencia emocional puede importar más que el coeficiente intelectual para el éxito personal y profesional.
+
+20. El Origen de las Especies
+
+Autor: Charles Darwin
+Año de Publicación: 1859
+Imagen de Portada: https://m.media-amazon.com/images/I/514CvkyD7QL._SL1491_.jpg
+ASIN: /dp/B0DYK36QLB
+Descripción: La obra fundamental que introduce la teoría de la evolución por selección natural, revolucionando la biología moderna.
 
 Top 10 Libros de Historia
+
 ## 1. Sapiens: De Animales a Dioses
 - **Autor:** Yuval Noah Harari
 - **Año de Publicación:** 2011
@@ -213,6 +373,87 @@ Top 10 Libros de Historia
 - **Imagen de Portada:** https://m.media-amazon.com/images/I/71aLbjCBRnL._SL1500_.jpg
 - **ASIN:** /dp/B0CFZFJYKS
 - **Descripción:** Jean Valjean busca redención en la Francia del siglo XIX, en una épica historia sobre justicia, amor y revolución social.
+
+11. La Sombra del Viento
+
+Autor: Carlos Ruiz Zafón
+Año de Publicación: 2001
+Imagen de Portada: https://m.media-amazon.com/images/I/61nVH-yc7-L._SL1050_.jpg
+ASIN: /dp/8408299751
+Descripción: Daniel descubre un libro misterioso en Barcelona de posguerra que lo lleva a desentrañar secretos del pasado y la Guerra Civil.
+
+12. Memorias de Adriano
+
+Autor: Marguerite Yourcenar
+Año de Publicación: 1951
+Imagen de Portada: https://m.media-amazon.com/images/I/61nfQ-br8QL._SL1291_.jpg
+ASIN: /dp/6073103220
+Descripción: El emperador romano Adriano reflexiona sobre su vida, amor por Antínoo y el poder en esta ficción histórica íntima.
+
+13. Yo, Claudio
+
+Autor: Robert Graves
+Año de Publicación: 1934
+Imagen de Portada: https://m.media-amazon.com/images/I/91C2BIrY2pL._SL1500_.jpg
+ASIN: /dp/8435005208
+Descripción: Las memorias ficticias del emperador romano Claudio sobre las intrigas, asesinatos y locuras de la dinastía Julio-Claudia.
+
+14. La Conjura de los Necios
+
+Autor: John Kennedy Toole
+Año de Publicación: 1980
+Imagen de Portada: https://m.media-amazon.com/images/I/81FZYxOWkrL._SL1500_.jpg
+ASIN: /dp/8433902326
+Descripción: Ignatius J. Reilly, un intelectual medieval atrapado en la Nueva Orleans moderna, causa caos cómico por donde pasa.
+
+15. El Médico
+
+Autor: Noah Gordon
+Año de Publicación: 1986
+Imagen de Portada: https://m.media-amazon.com/images/I/71zuAgyG9TL._SY342_.jpg
+ASIN: /dp/8415729251
+Descripción: Un joven inglés del siglo XI viaja a Persia haciéndose pasar por judío para estudiar medicina con Avicena.
+
+16. Shogun
+
+Autor: James Clavell
+Año de Publicación: 1975
+Imagen de Portada: https://m.media-amazon.com/images/I/61b5n6pgSnL._SL1050_.jpg
+ASIN: /dp/8466379703
+Descripción: Un navegante inglés náufrago en Japón feudal se ve envuelto en luchas de poder entre señores de la guerra samurái.
+
+17. El Último Mohicano
+
+Autor: James Fenimore Cooper
+Año de Publicación: 1826
+Imagen de Portada: https://m.media-amazon.com/images/I/81STy77GacS._SL1500_.jpg
+ASIN: /dp/B07FMZ4ZJS
+Descripción: Durante la Guerra Franco-India, Hawkeye y sus aliados mohicanos escoltan a dos hermanas en territorio peligroso.
+
+18. La Catedral del Mar
+
+Autor: Ildefonso Falcones
+Año de Publicación: 2006
+Imagen de Portada: https://m.media-amazon.com/images/I/81jRChIWkPL._SL1500_.jpg
+ASIN: /dp/8425367786
+Descripción: Un siervo medieval lucha por su libertad mientras ayuda a construir la iglesia de Santa María del Mar en Barcelona.
+
+19. El Hereje
+
+Autor: Miguel Delibes
+Año de Publicación: 1998
+Imagen de Portada: https://m.media-amazon.com/images/I/61+1rlrijML._SL1050_.jpg
+ASIN: /dp/8423363880
+Descripción: Cipriano Salcedo, comerciante del siglo XVI en Valladolid, abraza el protestantismo enfrentando la Inquisición española.
+
+20. La Reina del Sur
+
+Autor: Arturo Pérez-Reverte
+Año de Publicación: 2002
+Imagen de Portada: https://m.media-amazon.com/images/I/51RqZIe9wqL.jpg
+ASIN: /dp/1589866177
+Descripción: Teresa Mendoza pasa de ser novia de un narcotraficante a convertirse en una poderosa líder del contrabando internacional.
+
 # Top 10 Libros de Ciencia Ficción
 
 Top 10 Libros de Ciencia Ficción
@@ -285,7 +526,86 @@ Top 10 Libros de Ciencia Ficción
 - **Imagen de Portada:** https://m.media-amazon.com/images/I/61DC0GVd5LL._SL1181_.jpg
 - **ASIN:** /dp/8445076825
 - **Descripción:** Científicos en una estación espacial estudian un océano viviente que materializa sus memorias más dolorosas y profundas.
-# Top 10 Libros de Ficción
+
+11. La Guerra de los Mundos
+
+Autor: H.G. Wells
+Año de Publicación: 1898
+Imagen de Portada: https://m.media-amazon.com/images/I/71xBSZ9qKTL._SL1500_.jpg
+ASIN: /dp/B0FYNJJ483
+Descripción: Marcianos invaden la Tierra con tecnología superior, pero encuentran un enemigo inesperado en este clásico pionero del género.
+
+12. La Máquina del Tiempo
+
+Autor: H.G. Wells
+Año de Publicación: 1895
+Imagen de Portada: https://m.media-amazon.com/images/I/6137--avcwL._SL1491_.jpg
+ASIN: /dp/B0C8R9FN3Q
+Descripción: Un científico victoriano viaja al año 802,701 y descubre la evolución divergente de la humanidad en dos especies distintas.
+
+13. Ubik
+
+Autor: Philip K. Dick
+Año de Publicación: 1969
+Imagen de Portada: https://m.media-amazon.com/images/I/81IQrIAEIKL._SL1500_.jpg
+ASIN: /dp/8445007378
+Descripción: Tras un ataque, empleados de una corporación descubren que la realidad se desmorona y retrocede en el tiempo constantemente.
+
+14. Hyperion
+
+Autor: Dan Simmons
+Año de Publicación: 1989
+Imagen de Portada: https://m.media-amazon.com/images/I/91uTbqdHpnL._SL1500_.jpg
+ASIN: /dp/8466658033
+Descripción: Siete peregrinos viajan a un planeta remoto, cada uno narrando su historia al estilo de los Cuentos de Canterbury futuristas.
+
+15. El Fin de la Eternidad
+
+Autor: Isaac Asimov
+Año de Publicación: 1955
+Imagen de Portada: https://m.media-amazon.com/images/I/51hbfoLqqhL._SL1050_.jpg
+ASIN: /dp/8491425756
+Descripción: Los Eternos manipulan el tiempo para mejorar la humanidad, hasta que un técnico se enamora y cambia todo el destino humano.
+
+16. La Guerra Interminable
+
+Autor: Joe Haldeman
+Año de Publicación: 1974
+Imagen de Portada: https://m.media-amazon.com/images/I/81qGZgzUsuL._SL1500_.jpg
+ASIN: /dp/8490709262
+Descripción: Soldados luchan en una guerra espacial de siglos debido a la dilatación temporal, regresando a una Tierra irreconocible.
+
+17. Contacto
+
+Autor: Carl Sagan
+Año de Publicación: 1985
+Imagen de Portada: https://m.media-amazon.com/images/I/71x0CMouHZL._SL1500_.jpg
+ASIN: /dp/6073166443
+Descripción: Una astrónoma recibe una señal extraterrestre que contiene planos para una máquina capaz de contactar con sus creadores.
+
+18. Carbono Modificado
+
+Autor: Richard K. Morgan
+Año de Publicación: 2002
+Imagen de Portada: https://m.media-amazon.com/images/I/71Ar10opdgL._SL1500_.jpg
+ASIN: /dp/8417507477
+Descripción: En un futuro donde la conciencia se transfiere entre cuerpos, un ex soldado investiga el asesinato de un hombre rico.
+
+19. Matadero Cinco
+
+Autor: Kurt Vonnegut
+Año de Publicación: 1969
+Imagen de Portada: https://m.media-amazon.com/images/I/81-W5SUCRjL._SL1500_.jpg
+ASIN: /dp/B0BZZ23KMY
+Descripción: Billy Pilgrim viaja en el tiempo sin control, viviendo momentos de su vida, incluyendo el bombardeo de Dresde aleatoriamente.
+
+20. El Despertar del Leviatán
+
+Autor: James S.A. Corey
+Año de Publicación: 2011
+Imagen de Portada: https://m.media-amazon.com/images/I/810CU9+IGiL._SL1500_.jpg
+ASIN: /dp/8466660151
+Descripción: Un detective y un capitán descubren una conspiración que amenaza la frágil paz entre la Tierra, Marte y el Cinturón.
 
 Top 10 Libros de Ficción
 ## 1. 1984
@@ -358,6 +678,86 @@ Top 10 Libros de Ficción
 - **ASIN:** /dp/8478884459
 - **Descripción:** Harry Potter descubre que es un mago y comienza su educación en Hogwarts, donde enfrenta misterios y magia oscura.
 
+11. Cumbres Borrascosas
+
+Autor: Emily Brontë
+Año de Publicación: 1847
+Imagen de Portada: https://m.media-amazon.com/images/I/71z0fG-3LSL._SL1000_.jpg
+ASIN: /dp/8415618891
+Descripción: La pasión destructiva entre Heathcliff y Catherine se desarrolla en los páramos ingleses en esta oscura historia gótica.
+
+12. El Retrato de Dorian Gray
+
+Autor: Oscar Wilde
+Año de Publicación: 1890
+Imagen de Portada: https://m.media-amazon.com/images/I/61UA2Ke-HZL._SL1491_.jpg
+ASIN: /dp/B0CLJDQB8C
+Descripción: Un joven aristocrata mantiene su belleza mientras su retrato envejece, reflejando la corrupción de su alma hedonista.
+
+13. Crónica de una Muerte Anunciada
+
+Autor: Gabriel García Márquez
+Año de Publicación: 1981
+Imagen de Portada: https://m.media-amazon.com/images/I/818cJE+RAzL._SL1500_.jpg
+ASIN: /dp/1400034957
+Descripción: Un pueblo entero conoce el inminente asesinato de Santiago Nasar, pero nadie lo previene en este thriller magistral.
+
+14. Los Pilares de la Tierra
+
+Autor: Ken Follett
+Año de Publicación: 1989
+Imagen de Portada: https://m.media-amazon.com/images/I/51SwGPdq3HL.jpg
+ASIN: /dp/8401328519
+Descripción: La construcción de una catedral gótica en la Inglaterra medieval entrelaza ambiciones, traiciones y un amor prohibido.
+
+15. El Cuento de la Criada
+
+Autor: Margaret Atwood
+Año de Publicación: 1985
+Imagen de Portada: https://m.media-amazon.com/images/I/51pmeQKvt4S._SL1500_.jpg
+ASIN: /dp/8498389070
+Descripción: En una teocracia totalitaria, las mujeres fértiles son forzadas a ser reproductoras en esta distopía feminista inquietante.
+
+16. El Perfume
+
+Autor: Patrick Süskind
+Año de Publicación: 1985
+Imagen de Portada: https://m.media-amazon.com/images/I/91xy8I69j7L._SL1500_.jpg
+ASIN: /dp/8432225363
+Descripción: Un genio olfativo sin olor corporal propio obsesionado con crear el perfume perfecto comete asesinatos en la Francia del siglo XVIII.
+
+17. El Nombre del Viento
+
+Autor: Patrick Rothfuss
+Año de Publicación: 2007
+Imagen de Portada: https://m.media-amazon.com/images/I/81Zw8b8QbGL._SL1500_.jpg
+ASIN: /dp/8466354026
+Descripción: Kvothe narra su transformación de niño prodigio a legendario mago y músico en esta épica fantasía contemporánea.
+
+18. Beloved
+
+Autor: Toni Morrison
+Año de Publicación: 1987
+Imagen de Portada: https://m.media-amazon.com/images/I/71A1I-xIAHL._SL1500_.jpg
+ASIN: /dp/8426409377
+Descripción: Una ex esclava es perseguida por el fantasma de su hija muerta en esta poderosa novela sobre el trauma de la esclavitud.
+
+19. El Amor en los Tiempos del Cólera
+
+Autor: Gabriel García Márquez
+Año de Publicación: 1985
+Imagen de Portada: https://m.media-amazon.com/images/I/71oUUqtpMiL._SL1500_.jpg
+ASIN: /dp/8439728352
+Descripción: Florentino Ariza espera más de cincuenta años para conquistar a Fermina Daza en esta historia de amor inquebrantable.
+
+20. Las Aventuras de Huckleberry Finn
+
+Autor: Mark Twain
+Año de Publicación: 1884
+Imagen de Portada: https://m.media-amazon.com/images/I/914RVTaJWGL._SL1500_.jpg
+ASIN: /dp/8420433934
+Descripción: Huck huye por el Mississippi con Jim, un esclavo fugitivo, en esta sátira sobre racismo y libertad en Estados Unidos.
+
 # Top 10 Libros Latinoamericanos
 
 ## 1. Cien Años de Soledad
@@ -429,3 +829,83 @@ Top 10 Libros de Ficción
 - **Imagen de Portada:** https://m.media-amazon.com/images/I/612e-xhmW9L._SL1050_.jpg
 - **ASIN:** /dp/8420423939
 - **Descripción:** Jóvenes poetas buscan a una escritora desaparecida en México, explorando la bohemia literaria de los años setenta.
+
+11. La Tregua
+
+Autor: Mario Benedetti
+Año de Publicación: 1960
+Imagen de Portada: https://m.media-amazon.com/images/I/81QNsNgszYL._SL1500_.jpg
+ASIN: /dp/8420666882
+Descripción: Un viudo montevideano próximo a jubilarse inicia un romance inesperado que transforma sus últimos días de trabajo.
+
+12. Aura
+
+Autor: Carlos Fuentes
+Año de Publicación: 1962
+Imagen de Portada: https://m.media-amazon.com/images/I/91omNHYaPIL._SL1500_.jpg
+ASIN: /dp/6074451842
+Descripción: Un joven historiador acepta un trabajo en una mansión misteriosa y queda atrapado en un hechizo entre dos mujeres.
+
+13. La Vorágine
+
+Autor: José Eustasio Rivera
+Año de Publicación: 1924
+Imagen de Portada: https://m.media-amazon.com/images/I/81tcoRbOtWL._SL1500_.jpg
+ASIN: /dp/B006KVKRS8
+Descripción: Arturo Cova huye con su amante a la selva colombiana donde descubre los horrores de la explotación cauchera amazónica.
+
+14. El Reino de Este Mundo
+
+Autor: Alejo Carpentier
+Año de Publicación: 1949
+Imagen de Portada: https://m.media-amazon.com/images/I/71wowhjgMdL._SL1000_.jpg
+ASIN: /dp/1490981578
+Descripción: La revolución haitiana contada a través de Ti Noel, un esclavo que presencia la transformación mágica de su nación.
+
+15. Ficciones
+
+Autor: Jorge Luis Borges
+Año de Publicación: 1944
+Imagen de Portada: https://m.media-amazon.com/images/I/61aCU68SLIL._SL1200_.jpg
+ASIN: /dp/0307950921
+Descripción: Colección de cuentos que exploran laberintos, bibliotecas infinitas y realidades alternativas en prosa filosófica brillante.
+
+16. La Muerte de Artemio Cruz
+
+Autor: Carlos Fuentes
+Año de Publicación: 1962
+Imagen de Portada: https://m.media-amazon.com/images/I/61n3mWTfq5L._SL1055_.jpg
+ASIN: /dp/8402070019
+Descripción: Un magnate mexicano moribundo recuerda su vida en flashbacks que revelan la corrupción de la Revolución Mexicana.
+
+17. El Beso de la Mujer Araña
+
+Autor: Manuel Puig
+Año de Publicación: 1976
+Imagen de Portada: https://m.media-amazon.com/images/I/71ZhkXEBl5L._SL1500_.jpg
+ASIN: /dp/B09Z636T3Z
+Descripción: Dos prisioneros en Argentina desarrollan una amistad inesperada mientras uno narra películas al otro en su celda.
+
+18. Pantaleón y las Visitadoras
+
+Autor: Mario Vargas Llosa
+Año de Publicación: 1973
+Imagen de Portada: https://m.media-amazon.com/images/I/710U24aBizL._SL1500_.jpg
+ASIN: /dp/B01C7T5EM0
+Descripción: Un capitán del ejército peruano recibe la misión de organizar un servicio de prostitutas para las tropas en la Amazonía.
+
+19. Santa Evita
+
+Autor: Tomás Eloy Martínez
+Año de Publicación: 1995
+Imagen de Portada: https://m.media-amazon.com/images/I/71S2BTUOJXL._SL1176_.jpg
+ASIN: /dp/0679768149
+Descripción: La historia del cadáver embalsamado de Eva Perón y su extraño viaje por Argentina tras la caída de su esposo.
+
+20. El Otoño del Patriarca
+
+Autor: Gabriel García Márquez
+Año de Publicación: 1975
+Imagen de Portada: https://m.media-amazon.com/images/I/71ebmlnzRRL._SL1500_.jpg
+ASIN: /dp/B00SNOFVQI
+Descripción: El retrato de un dictador latinoamericano anciano y su decadencia, narrado en largos pasajes de prosa poética hipnótica.
