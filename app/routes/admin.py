@@ -1,94 +1,160 @@
-# routes/admin.py
 from flask import Blueprint, request, jsonify
-from app.models import User, Book, Author, Rating, UserLibrary
+from app.models import Admin, Author, Book, User, Rating, UserLibrary
 from app import db
-from app.errors import bad_request, not_found, internal_error, conflict, unauthorized
-from sqlalchemy import func, and_
+from app.errors import bad_request, unauthorized, conflict, internal_error, not_found
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from sqlalchemy import func
 
 admin_bp = Blueprint('admin', __name__)
 
-# ===== CREDENCIALES MAESTRAS DEL ADMIN (SOLO EN CÓDIGO) =====
-ADMIN_MASTER_CREDENTIALS = {
-    'username': 'booketadmin',
-    'password': 'AdminBooket',
-    'secret_key': 'BKTLST-ADM-2024-SECRET'
-}
-
-# ===== MIDDLEWARE DE VERIFICACIÓN DE ADMIN =====
-def check_admin():
-    """Verificar si la solicitud tiene las credenciales maestras de admin"""
-    try:
-        # Opción 1: Verificar header de autorización personalizado
-        admin_secret = request.headers.get('X-Admin-Secret')
-        if admin_secret and admin_secret == ADMIN_MASTER_CREDENTIALS['secret_key']:
-            return None  # Autorizado
-        
-        # Opción 2: Verificar en el body de la solicitud
-        data = request.get_json(silent=True) or {}
-        admin_username = data.get('admin_username')
-        admin_password = data.get('admin_password')
-        
-        if (admin_username and admin_password and 
-            admin_username == ADMIN_MASTER_CREDENTIALS['username'] and 
-            admin_password == ADMIN_MASTER_CREDENTIALS['password']):
-            return None  # Autorizado
-        
-        # Opción 3: Verificar parámetros de query (para GET requests)
-        admin_username = request.args.get('admin_username')
-        admin_password = request.args.get('admin_password')
-        
-        if (admin_username and admin_password and 
-            admin_username == ADMIN_MASTER_CREDENTIALS['username'] and 
-            admin_password == ADMIN_MASTER_CREDENTIALS['password']):
-            return None  # Autorizado
-        
-        return jsonify({
-            "error": "No autorizado - Se requieren credenciales de administrador",
-            "hint": "Usa X-Admin-Secret header o proporciona admin_username y admin_password"
-        }), 403
-        
-    except Exception as e:
-        return internal_error(str(e))
-
-# ===== RUTA DE LOGIN PARA ADMIN =====
-@admin_bp.route('/admin/login', methods=['POST'])
-def admin_login():
-    """Login para panel de administración con credenciales maestras"""
+# ===== AUTHENTICATION =====
+@admin_bp.route('/admin/auth/register', methods=['POST'])
+def admin_register_user():
+    """Registrar un nuevo administrador"""
     try:
         data = request.get_json()
-        
+
         if not data:
-            return bad_request('Datos de login requeridos')
+            return bad_request('Datos de registro requeridos')
+
+        required_fields = ['nombre_admin', 'email_admin', 'password_admin']
+        for field in required_fields:
+            if not data.get(field):
+                return bad_request(f'El campo {field} es requerido')
+
+        existing_admin = Admin.query.filter_by(email_admin=data['email_admin']).first()
+        if existing_admin:
+            return conflict('El correo electrónico ya está registrado')
+
+        admin = Admin(
+            nombre_admin=data['nombre_admin'],
+            email_admin=data['email_admin'],
+            password_admin=data['password_admin']
+        )
+
+        if 'is_active' in data:
+            admin.is_active = data['is_active']
+
+        db.session.add(admin)
+        db.session.commit()
+
+        access_token = create_access_token(
+            identity=str(admin.id_admin),
+            additional_claims={'is_admin': True}
+        )
+
+        return jsonify({
+            'message': 'Administrador registrado exitosamente',
+            'access_token': access_token,
+            'admin': admin.serialize()
+        }), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return internal_error(str(e))
+
+@admin_bp.route('/admin/login', methods=['POST'])
+def admin_login_user():
+    """Login para administradores"""
+    try:
+        data = request.get_json()
+        email = data.get('email_admin')
+        password = data.get('password_admin')
+
+        if not email or not password:
+            return bad_request('Correo electrónico y contraseña requeridos')
         
-        username = data.get('username')
-        password = data.get('password')
+        admin = Admin.query.filter_by(email_admin=email).first()
+
+        if not admin:
+            return unauthorized('Credenciales inválidas')
         
-        if not username or not password:
-            return bad_request('Username y password requeridos')
+        if not admin.is_active:
+            return unauthorized('Cuenta de administrador desactivada')
         
-        if (username == ADMIN_MASTER_CREDENTIALS['username'] and 
-            password == ADMIN_MASTER_CREDENTIALS['password']):
-            
-            return jsonify({
-                'message': 'Login de administrador exitoso',
-                'access_granted': True,
-                'admin_user': ADMIN_MASTER_CREDENTIALS['username'],
-                'secret_key': ADMIN_MASTER_CREDENTIALS['secret_key']
-            }), 200
-        else:
-            return unauthorized('Credenciales de administrador inválidas')
+        if not admin.check_password(password):
+            return unauthorized('Credenciales inválidas')
+        
+        access_token = create_access_token(
+            identity=str(admin.id_admin),
+            additional_claims={'is_admin': True}
+        )
+
+        return jsonify({
+            'message': 'Ingreso de administrador exitoso',
+            'access_token': access_token,
+            'admin': admin.serialize()
+        }), 200
     
     except Exception as e:
         return internal_error(str(e))
 
-# ===== RUTAS DE USUARIOS =====
-@admin_bp.route('/admin/users', methods=['GET'])
-def get_all_users():
-    """Obtener lista de todos los usuarios"""
+@admin_bp.route('/admin/profile', methods=['GET'])
+@jwt_required()
+def admin_get_profile():
+    """Obtener perfil del administrador"""
     try:
-        admin_check = check_admin()
-        if admin_check:
-            return admin_check
+        current_admin_id = get_jwt_identity()
+        admin = Admin.query.get(current_admin_id)
+
+        if not admin:
+            return not_found('Administrador no encontrado')
+        
+        return jsonify(admin.serialize()), 200
+    
+    except Exception as e:
+        return internal_error(str(e))
+
+@admin_bp.route('/admin/auth/profile', methods=['PUT'])
+@jwt_required()
+def admin_update_profile():
+    """Actualizar perfil del administrador"""
+    try:
+        current_admin_id = get_jwt_identity()
+        admin = Admin.query.get(current_admin_id)
+
+        if not admin:
+            return not_found('Administrador no encontrado')
+        
+        data = request.get_json()
+
+        if 'nombre_admin' in data:
+            admin.nombre_admin = data['nombre_admin']
+        
+        if 'email_admin' in data:
+            existing_admin = Admin.query.filter(
+                Admin.email_admin == data['email_admin'],
+                Admin.id_admin != current_admin_id
+            ).first()
+            if existing_admin:
+                return conflict('El correo electrónico ya está en uso')
+            admin.email_admin = data['email_admin']
+
+        if 'password_admin' in data and data['password_admin']:
+            admin.set_password(data['password_admin'])
+        
+        db.session.commit()
+
+        return jsonify({
+            'message': 'Perfil actualizado exitosamente',
+            'admin': admin.serialize()
+        }), 200
+    
+    except Exception as e:
+        db.session.rollback()
+        return internal_error(str(e))
+
+# ===== USER MANAGEMENT =====
+@admin_bp.route('/admin/users/all', methods=['GET'])
+@jwt_required()
+def admin_get_all_users():
+    """Obtener todos los usuarios"""
+    try:
+        current_admin_id = get_jwt_identity()
+        current_admin = Admin.query.get(current_admin_id)
+
+        if not current_admin:
+            return unauthorized('No tiene permiso para ver usuarios')
         
         users = User.query.all()
         return jsonify([user.serialize_public() for user in users]), 200
@@ -97,12 +163,15 @@ def get_all_users():
         return internal_error(str(e))
 
 @admin_bp.route('/admin/users/<int:user_id>', methods=['GET'])
-def get_user(user_id):
-    """Obtener información detallada de un usuario específico"""
+@jwt_required()
+def admin_get_user_detail(user_id):  # <- Agregar user_id aquí
+    """Obtener detalles de un usuario específico"""
     try:
-        admin_check = check_admin()
-        if admin_check:
-            return admin_check
+        current_admin_id = get_jwt_identity()
+        current_admin = Admin.query.get(current_admin_id)
+
+        if not current_admin:
+            return unauthorized('No tiene permiso para ver usuarios')
         
         user = User.query.get_or_404(user_id)
         return jsonify(user.serialize()), 200
@@ -110,13 +179,16 @@ def get_user(user_id):
     except Exception as e:
         return not_found(str(e))
 
-@admin_bp.route('/admin/users/<int:user_id>/toggle-status', methods=['PUT'])
-def toggle_user_status(user_id):
-    """Alternar estado de usuario (bloquear/desbloquear)"""
+@admin_bp.route('/admin/users/<int:user_id>/status', methods=['PUT'])
+@jwt_required()
+def admin_toggle_user_status(user_id):  # <- Agregar user_id aquí
+    """Cambiar estado de usuario (bloquear/desbloquear)"""
     try:
-        admin_check = check_admin()
-        if admin_check:
-            return admin_check
+        current_admin_id = get_jwt_identity()
+        current_admin = Admin.query.get(current_admin_id)
+
+        if not current_admin:
+            return unauthorized('No tiene permiso para gestionar usuarios')
         
         user = User.query.get_or_404(user_id)
         user.is_active = not user.is_active
@@ -132,180 +204,281 @@ def toggle_user_status(user_id):
     except Exception as e:
         db.session.rollback()
         return internal_error(str(e))
-
-@admin_bp.route('/admin/users/stats', methods=['GET'])
-def get_users_stats():
-    """Obtener estadísticas de usuarios"""
-    try:
-        admin_check = check_admin()
-        if admin_check:
-            return admin_check
-        
-        total_users = User.query.count()
-        active_users = User.query.filter_by(is_active=True).count()
-        blocked_users = User.query.filter_by(is_active=False).count()
-        
-        users_with_books = db.session.query(func.count(func.distinct(UserLibrary.id_usuario))).scalar()
-        users_with_reviews = db.session.query(func.count(func.distinct(Rating.id_usuario))).scalar()
-        
-        return jsonify({
-            "total_users": total_users,
-            "active_users": active_users,
-            "blocked_users": blocked_users,
-            "users_with_books": users_with_books,
-            "users_with_reviews": users_with_reviews,
-            "active_percentage": round((active_users / total_users) * 100, 2) if total_users > 0 else 0
-        }), 200
-    
     except Exception as e:
+        db.session.rollback()
         return internal_error(str(e))
 
-# ===== RUTAS DE LIBROS =====
-@admin_bp.route('/admin/books', methods=['GET'])
-def get_all_books():
-    """Obtener todos los libros con información completa"""
+# ===== AUTHOR MANAGEMENT =====
+@admin_bp.route('/admin/authors/create', methods=['POST'])
+@jwt_required()
+def admin_create_author():
+    """Crear un nuevo autor"""
     try:
-        admin_check = check_admin()
-        if admin_check:
-            return admin_check
-        
-        books = Book.query.all()
-        return jsonify([{
-            'id_libros': libro.id_libros,
-            'titulo_libro': libro.titulo_libro,
-            'autor': f"{libro.autor.nombre_autor} {libro.autor.apellido_autor}" if libro.autor else "Desconocido",
-            'id_autor': libro.id_autor,
-            'genero_libro': libro.genero_libro,
-            'descripcion_libros': libro.descripcion_libros,
-            'enlace_portada_libro': libro.enlace_portada_libro,
-            'enlace_asin_libro': libro.enlace_asin_libro,
-            'created_at': libro.created_at.isoformat() if libro.created_at else None,
-            'total_resenas': len(libro.calificaciones),
-            'rating_promedio': db.session.query(func.avg(Rating.calificacion)).filter(
-                Rating.id_libro == libro.id_libros
-            ).scalar() or 0
-        } for libro in books]), 200
-    
-    except Exception as e:
-        return internal_error(str(e))
+        current_admin_id = get_jwt_identity()
+        current_admin = Admin.query.get(current_admin_id)
 
-@admin_bp.route('/admin/books/<int:book_id>', methods=['GET'])
-def get_book_detail(book_id):
-    """Obtener información detallada de un libro"""
-    try:
-        admin_check = check_admin()
-        if admin_check:
-            return admin_check
-        
-        libro = Book.query.get_or_404(book_id)
-        
-        total_reviews = len(libro.calificaciones)
-        avg_rating = db.session.query(func.avg(Rating.calificacion)).filter(
-            Rating.id_libro == book_id
-        ).scalar() or 0
-        in_libraries = UserLibrary.query.filter_by(id_libro=book_id).count()
-        
-        return jsonify({
-            'book': libro.serialize(),
-            'stats': {
-                'total_reviews': total_reviews,
-                'average_rating': round(float(avg_rating), 2),
-                'in_user_libraries': in_libraries,
-                'total_users_rated': total_reviews
-            }
-        }), 200
-    
-    except Exception as e:
-        return not_found(str(e))
-
-@admin_bp.route('/admin/books/create', methods=['POST'])
-def create_book():
-    """Crear un nuevo libro"""
-    try:
-        admin_check = check_admin()
-        if admin_check:
-            return admin_check
+        if not current_admin:
+            return unauthorized('No tiene permiso para agregar autores')
         
         data = request.get_json()
+
+        if not data.get('nombre_autor') or not data.get('apellido_autor'):
+            return bad_request('Nombre y apellido del autor son requeridos')
         
-        required_fields = ['titulo_libro', 'id_autor', 'genero_libro', 'descripcion_libros']
-        for field in required_fields:
-            if not data.get(field):
-                return bad_request(f'Campo {field} es requerido')
+        existing_author = Author.query.filter_by(
+            nombre_autor=data['nombre_autor'],
+            apellido_autor=data['apellido_autor']
+        ).first()
+
+        if existing_author:
+            return conflict('El autor ya existe en la base de datos')
         
-        author = Author.query.get(data['id_autor'])
-        if not author:
-            return not_found('Autor no encontrado')
-        
-        libro = Book(
-            titulo_libro=data['titulo_libro'],
-            id_autor=data['id_autor'],
-            genero_libro=data['genero_libro'],
-            descripcion_libros=data['descripcion_libros'],
-            enlace_portada_libro=data.get('enlace_portada_libro', ''),
-            enlace_asin_libro=data.get('enlace_asin_libro', '')
+        # Crear autor sin el campo imagen_autor por ahora
+        author = Author(
+            nombre_autor=data['nombre_autor'],
+            apellido_autor=data['apellido_autor'],
+            biografia_autor=data.get('biografia_autor', '')
+            # No incluir imagen_autor temporalmente
         )
-        
-        db.session.add(libro)
+
+        db.session.add(author)
         db.session.commit()
-        
+
         return jsonify({
-            'message': 'Libro creado exitosamente',
-            'book': libro.serialize()
+            'message': 'Autor agregado exitosamente',
+            'author': {
+                'id_autor': author.id_autor,
+                'nombre_autor': author.nombre_autor,
+                'apellido_autor': author.apellido_autor,
+                'biografia_autor': author.biografia_autor,
+                'created_at': author.created_at.isoformat() if author.created_at else None,
+                'updated_at': author.updated_at.isoformat() if author.updated_at else None
+            }
         }), 201
     
     except Exception as e:
         db.session.rollback()
         return internal_error(str(e))
 
-@admin_bp.route('/admin/books/update/<int:book_id>', methods=['PUT'])
-def update_book(book_id):
-    """Actualizar información de un libro"""
+@admin_bp.route('/admin/authors/list', methods=['GET'])
+@jwt_required()
+def admin_get_all_authors():
+    """Obtener lista de todos los autores"""
     try:
-        admin_check = check_admin()
-        if admin_check:
-            return admin_check
+        current_admin_id = get_jwt_identity()
+        current_admin = Admin.query.get(current_admin_id)
+
+        if not current_admin:
+            return unauthorized('No tiene permiso para ver autores')
         
-        libro = Book.query.get_or_404(book_id)
+        # Usar consulta específica para evitar el campo problemático
+        authors = db.session.query(
+            Author.id_autor,
+            Author.nombre_autor,
+            Author.apellido_autor,
+            Author.biografia_autor,
+            Author.created_at,
+            Author.updated_at
+        ).all()
+        
+        authors_data = []
+        for author in authors:
+            authors_data.append({
+                'id_autor': author.id_autor,
+                'nombre_autor': author.nombre_autor,
+                'apellido_autor': author.apellido_autor,
+                'biografia_autor': author.biografia_autor,
+                'imagen_autor': None,  # Valor por defecto
+                'created_at': author.created_at.isoformat() if author.created_at else None,
+                'updated_at': author.updated_at.isoformat() if author.updated_at else None
+            })
+        
+        return jsonify(authors_data), 200
+    
+    except Exception as e:
+        return internal_error(str(e))
+
+@admin_bp.route('/admin/authors/<int:author_id>/update', methods=['PUT'])
+@jwt_required()
+def admin_update_author(author_id):
+    """Actualizar información de un autor"""
+    try:
+        current_admin_id = get_jwt_identity()
+        current_admin = Admin.query.get(current_admin_id)
+
+        if not current_admin:
+            return unauthorized('No tiene permiso para actualizar autores')
+        
+        author = Author.query.get_or_404(author_id)
         data = request.get_json()
-        
-        updatable_fields = ['titulo_libro', 'id_autor', 'genero_libro', 'descripcion_libros', 
-                           'enlace_portada_libro', 'enlace_asin_libro']
-        
-        for field in updatable_fields:
-            if field in data:
-                setattr(libro, field, data[field])
+
+        if 'nombre_autor' in data:
+            author.nombre_autor = data['nombre_autor']
+        if 'apellido_autor' in data:
+            author.apellido_autor = data['apellido_autor']
+        if 'biografia_autor' in data:
+            author.biografia_autor = data['biografia_autor']
+        # No actualizar imagen_autor por ahora
         
         db.session.commit()
-        
+
         return jsonify({
-            'message': 'Libro actualizado exitosamente',
-            'book': libro.serialize()
+            'message': 'Autor actualizado exitosamente',
+            'author': {
+                'id_autor': author.id_autor,
+                'nombre_autor': author.nombre_autor,
+                'apellido_autor': author.apellido_autor,
+                'biografia_autor': author.biografia_autor,
+                'imagen_autor': None,
+                'created_at': author.created_at.isoformat() if author.created_at else None,
+                'updated_at': author.updated_at.isoformat() if author.updated_at else None
+            }
         }), 200
     
     except Exception as e:
         db.session.rollback()
         return internal_error(str(e))
 
-@admin_bp.route('/admin/books/delete/<int:book_id>', methods=['DELETE'])
-def delete_book(book_id):
+@admin_bp.route('/admin/authors/<int:author_id>/delete', methods=['DELETE'])
+@jwt_required()
+def admin_delete_author(author_id):
+    """Eliminar un autor"""
+    try:
+        current_admin_id = get_jwt_identity()
+        current_admin = Admin.query.get(current_admin_id)
+
+        if not current_admin:
+            return unauthorized('No tiene permiso para eliminar autores')
+        
+        author = Author.query.get_or_404(author_id)
+
+        if author.libros:
+            return conflict('No se puede eliminar un autor que tiene libros asociados')
+        
+        db.session.delete(author)
+        db.session.commit()
+
+        return jsonify({
+            'message': 'Autor eliminado exitosamente'
+        }), 200
+    
+    except Exception as e:
+        db.session.rollback()
+        return internal_error(str(e))
+
+# ===== BOOK MANAGEMENT =====
+@admin_bp.route('/admin/books/create', methods=['POST'])
+@jwt_required()
+def admin_create_book():
+    """Crear un nuevo libro"""
+    try:
+        current_admin_id = get_jwt_identity()
+        current_admin = Admin.query.get(current_admin_id)
+
+        if not current_admin:
+            return unauthorized('No tiene permiso para agregar libros')
+        
+        data = request.get_json()
+
+        required_fields = ['titulo_libro', 'id_autor', 'genero_libro']
+        for field in required_fields:
+            if not data.get(field):
+                return bad_request(f'El campo {field} es requerido')
+            
+        author = Author.query.get(data['id_autor'])
+        if not author:
+            return not_found('Autor no encontrado')
+        
+        book = Book(
+            titulo_libro=data['titulo_libro'],
+            id_autor=data['id_autor'],
+            genero_libro=data['genero_libro'],
+            descripcion_libros=data.get('descripcion_libros', ''),
+            enlace_portada_libro=data.get('enlace_portada_libro', ''),
+            enlace_asin_libro=data.get('enlace_asin_libro', '')
+        )
+
+        db.session.add(book)
+        db.session.commit()
+
+        return jsonify({
+            'message': 'Libro agregado exitosamente',
+            'book': book.serialize()
+        }), 201
+    
+    except Exception as e:
+        db.session.rollback()
+        return internal_error(str(e))
+
+@admin_bp.route('/admin/books/list', methods=['GET'])
+@jwt_required()
+def admin_get_all_books():
+    """Obtener lista de todos los libros"""
+    try:
+        current_admin_id = get_jwt_identity()
+        current_admin = Admin.query.get(current_admin_id)
+
+        if not current_admin:
+            return unauthorized('No tiene permiso para ver libros')
+        
+        books = Book.query.all()
+        return jsonify([book.serialize() for book in books]), 200
+    
+    except Exception as e:
+        return internal_error(str(e))
+
+@admin_bp.route('/admin/books/<int:book_id>/update', methods=['PUT'])
+@jwt_required()
+def admin_update_book(book_id):
+    """Actualizar información de un libro"""
+    try:
+        current_admin_id = get_jwt_identity()
+        current_admin = Admin.query.get(current_admin_id)
+
+        if not current_admin:
+            return unauthorized('No tiene permiso para actualizar libros')
+        
+        book = Book.query.get_or_404(book_id)
+        data = request.get_json()
+
+        if 'titulo_libro' in data:
+            book.titulo_libro = data['titulo_libro']
+        if 'genero_libro' in data:
+            book.genero_libro = data['genero_libro']
+        if 'descripcion_libros' in data:
+            book.descripcion_libros = data['descripcion_libros']
+        if 'enlace_portada_libro' in data:
+            book.enlace_portada_libro = data['enlace_portada_libro']
+        if 'enlace_asin_libro' in data:
+            book.enlace_asin_libro = data['enlace_asin_libro']
+
+        db.session.commit()
+
+        return jsonify({
+            'message': 'Libro actualizado exitosamente',
+            'book': book.serialize()
+        }), 200
+    
+    except Exception as e:
+        db.session.rollback()
+        return internal_error(str(e))
+
+@admin_bp.route('/admin/books/<int:book_id>/delete', methods=['DELETE'])
+@jwt_required()
+def admin_delete_book(book_id):
     """Eliminar un libro"""
     try:
-        admin_check = check_admin()
-        if admin_check:
-            return admin_check
+        current_admin_id = get_jwt_identity()
+        current_admin = Admin.query.get(current_admin_id)
+
+        if not current_admin:
+            return unauthorized('No tiene permiso para eliminar libros')
         
-        libro = Book.query.get_or_404(book_id)
-        
-        has_reviews = Rating.query.filter_by(id_libro=book_id).first()
-        in_libraries = UserLibrary.query.filter_by(id_libro=book_id).first()
-        
-        if has_reviews or in_libraries:
-            return bad_request('No se puede eliminar el libro porque tiene reseñas o está en bibliotecas de usuarios')
-        
-        db.session.delete(libro)
+        book = Book.query.get_or_404(book_id)
+
+        db.session.delete(book)
         db.session.commit()
-        
+
         return jsonify({
             'message': 'Libro eliminado exitosamente'
         }), 200
@@ -314,229 +487,17 @@ def delete_book(book_id):
         db.session.rollback()
         return internal_error(str(e))
 
-# ===== RUTAS DE AUTORES =====
-@admin_bp.route('/admin/authors', methods=['GET'])
-def get_all_authors():
-    """Obtener todos los autores"""
+# ===== DASHBOARD & STATISTICS =====
+@admin_bp.route('/admin/dashboard/overview', methods=['GET'])
+@jwt_required()
+def admin_dashboard_overview():
+    """Obtener estadísticas generales del dashboard"""
     try:
-        admin_check = check_admin()
-        if admin_check:
-            return admin_check
-        
-        authors = Author.query.all()
-        return jsonify([{
-            'id_autor': autor.id_autor,
-            'nombre_autor': autor.nombre_autor,
-            'apellido_autor': autor.apellido_autor,
-            'nombre_completo': f"{autor.nombre_autor} {autor.apellido_autor}",
-            'biografia_autor': autor.biografia_autor,
-            'total_libros': len(autor.libros),
-            'created_at': autor.created_at.isoformat() if autor.created_at else None
-        } for autor in authors]), 200
-    
-    except Exception as e:
-        return internal_error(str(e))
+        current_admin_id = get_jwt_identity()
+        current_admin = Admin.query.get(current_admin_id)
 
-@admin_bp.route('/admin/authors/<int:author_id>', methods=['GET'])
-def get_author_detail(author_id):
-    """Obtener información detallada de un autor"""
-    try:
-        admin_check = check_admin()
-        if admin_check:
-            return admin_check
-        
-        author = Author.query.get_or_404(author_id)
-        author_books = Book.query.filter_by(id_autor=author_id).all()
-        
-        return jsonify({
-            'author': author.serialize(),
-            'books': [book.serialize() for book in author_books],
-            'stats': {
-                'total_books': len(author_books),
-                'genres': list(set([book.genero_libro for book in author_books])),
-                'first_book_date': min([book.created_at for book in author_books]).isoformat() if author_books else None
-            }
-        }), 200
-    
-    except Exception as e:
-        return not_found(str(e))
-
-@admin_bp.route('/admin/authors/create', methods=['POST'])
-def create_author():
-    """Crear un nuevo autor"""
-    try:
-        admin_check = check_admin()
-        if admin_check:
-            return admin_check
-        
-        data = request.get_json()
-        
-        if not data.get('nombre_autor') or not data.get('apellido_autor'):
-            return bad_request('Nombre y apellido del autor son requeridos')
-        
-        autor = Author(
-            nombre_autor=data['nombre_autor'],
-            apellido_autor=data['apellido_autor'],
-            biografia_autor=data.get('biografia_autor', '')
-        )
-        
-        db.session.add(autor)
-        db.session.commit()
-        
-        return jsonify({
-            'message': 'Autor creado exitosamente',
-            'author': autor.serialize()
-        }), 201
-    
-    except Exception as e:
-        db.session.rollback()
-        return internal_error(str(e))
-@admin_bp.route('/admin/authors/update/<int:author_id>', methods=['PUT'])
-def update_author(author_id):
-    """Actualizar información de un autor"""
-    try:
-        admin_check = check_admin()
-        if admin_check:
-            return admin_check
-        
-        author = Author.query.get_or_404(author_id)
-        data = request.get_json()
-        
-        # Campos actualizables
-        if 'nombre_autor' in data:
-            author.nombre_autor = data['nombre_autor']
-        
-        if 'apellido_autor' in data:
-            author.apellido_autor = data['apellido_autor']
-        
-        if 'biografia_autor' in data:
-            author.biografia_autor = data['biografia_autor']
-        
-        db.session.commit()
-        
-        return jsonify({
-            'message': 'Autor actualizado exitosamente',
-            'author': author.serialize()
-        }), 200
-    
-    except Exception as e:
-        db.session.rollback()
-        return internal_error(str(e))
-    
-@admin_bp.route('/admin/authors/delete/<int:author_id>', methods=['DELETE'])
-def delete_author(author_id):
-    """Eliminar un autor y todos sus libros (con verificación de dependencias)"""
-    try:
-        admin_check = check_admin()
-        if admin_check:
-            return admin_check
-        
-        author = Author.query.get_or_404(author_id)
-        
-        # Verificar si el autor tiene libros
-        author_books = Book.query.filter_by(id_autor=author_id).all()
-        
-        # Verificar dependencias antes de eliminar
-        books_with_dependencies = []
-        
-        for book in author_books:
-            # Verificar si el libro tiene reseñas
-            has_reviews = Rating.query.filter_by(id_libro=book.id_libros).first()
-            # Verificar si el libro está en bibliotecas de usuarios
-            in_libraries = UserLibrary.query.filter_by(id_libro=book.id_libros).first()
-            
-            if has_reviews or in_libraries:
-                books_with_dependencies.append({
-                    'id_libros': book.id_libros,
-                    'titulo_libro': book.titulo_libro,
-                    'tiene_resenas': has_reviews is not None,
-                    'en_bibliotecas': in_libraries is not None
-                })
-        
-        # Si hay libros con dependencias, no podemos eliminar
-        if books_with_dependencies:
-            return jsonify({
-                "error": "No se puede eliminar el autor porque algunos libros tienen dependencias",
-                "libros_con_dependencias": books_with_dependencies,
-                "total_libros_con_problemas": len(books_with_dependencies),
-                "sugerencia": "Elimina primero las reseñas y quita los libros de las bibliotecas de usuarios"
-            }), 409
-        
-        # Si no hay dependencias, proceder con la eliminación
-        # Primero eliminar todos los libros del autor
-        for book in author_books:
-            db.session.delete(book)
-        
-        # Luego eliminar el autor
-        db.session.delete(author)
-        db.session.commit()
-        
-        return jsonify({
-            'message': f'Autor "{author.nombre_autor} {author.apellido_autor}" y {len(author_books)} libros eliminados exitosamente',
-            'autor_eliminado': author.serialize(),
-            'total_libros_eliminados': len(author_books)
-        }), 200
-    
-    except Exception as e:
-        db.session.rollback()
-        return internal_error(str(e))
-
-@admin_bp.route('/admin/authors/delete-force/<int:author_id>', methods=['DELETE'])
-def force_delete_author(author_id):
-    """ELIMINACIÓN FORZADA: Eliminar autor y todos sus libros (incluyendo dependencias)"""
-    try:
-        admin_check = check_admin()
-        if admin_check:
-            return admin_check
-        
-        author = Author.query.get_or_404(author_id)
-        author_books = Book.query.filter_by(id_autor=author_id).all()
-        
-        # Estadísticas antes de eliminar
-        total_libros = len(author_books)
-        total_resenas = 0
-        total_en_bibliotecas = 0
-        
-        # Eliminar dependencias primero
-        for book in author_books:
-            # Eliminar reseñas de este libro
-            reviews_deleted = Rating.query.filter_by(id_libro=book.id_libros).delete()
-            total_resenas += reviews_deleted
-            
-            # Eliminar de bibliotecas de usuarios
-            libraries_deleted = UserLibrary.query.filter_by(id_libro=book.id_libros).delete()
-            total_en_bibliotecas += libraries_deleted
-            
-            # Eliminar el libro
-            db.session.delete(book)
-        
-        # Eliminar el autor
-        db.session.delete(author)
-        db.session.commit()
-        
-        return jsonify({
-            'message': f'ELIMINACIÓN COMPLETA: Autor y todos sus datos eliminados',
-            'autor_eliminado': f"{author.nombre_autor} {author.apellido_autor}",
-            'estadisticas': {
-                'total_libros_eliminados': total_libros,
-                'total_resenas_eliminadas': total_resenas,
-                'total_bibliotecas_limpiadas': total_en_bibliotecas
-            },
-            'advertencia': 'Esta acción no se puede deshacer'
-        }), 200
-    
-    except Exception as e:
-        db.session.rollback()
-        return internal_error(str(e))
-
-# ===== DASHBOARD ESTADÍSTICAS GENERALES =====
-@admin_bp.route('/admin/dashboard/stats', methods=['GET'])
-def get_dashboard_stats():
-    """Obtener estadísticas generales para el dashboard de administración"""
-    try:
-        admin_check = check_admin()
-        if admin_check:
-            return admin_check
+        if not current_admin:
+            return unauthorized('No tiene permiso para ver el dashboard')
         
         total_users = User.query.count()
         total_books = Book.query.count()
@@ -560,32 +521,138 @@ def get_dashboard_stats():
     except Exception as e:
         return internal_error(str(e))
 
-# ===== RUTA PARA VERIFICAR CREDENCIALES =====
-@admin_bp.route('/admin/verify', methods=['POST'])
-def verify_admin():
-    """Verificar si las credenciales de admin son válidas"""
+@admin_bp.route('/admin/dashboard/users/stats', methods=['GET'])
+@jwt_required()
+def admin_users_statistics():
+    """Obtener estadísticas de usuarios"""
     try:
-        data = request.get_json()
+        current_admin_id = get_jwt_identity()
+        current_admin = Admin.query.get(current_admin_id)
+
+        if not current_admin:
+            return unauthorized('No tiene permiso para ver estadísticas')
         
-        if not data:
-            return bad_request('Datos requeridos')
+        total_users = User.query.count()
+        active_users = User.query.filter_by(is_active=True).count()
+        blocked_users = User.query.filter_by(is_active=False).count()
         
-        username = data.get('username')
-        password = data.get('password')
+        users_with_books = db.session.query(func.count(func.distinct(UserLibrary.id_usuario))).scalar()
+        users_with_reviews = db.session.query(func.count(func.distinct(Rating.id_usuario))).scalar()
         
-        if (username == ADMIN_MASTER_CREDENTIALS['username'] and 
-            password == ADMIN_MASTER_CREDENTIALS['password']):
-            
-            return jsonify({
-                'valid': True,
-                'message': 'Credenciales válidas',
-                'secret_key': ADMIN_MASTER_CREDENTIALS['secret_key']
-            }), 200
-        else:
-            return jsonify({
-                'valid': False,
-                'message': 'Credenciales inválidas'
-            }), 401
+        return jsonify({
+            "total_users": total_users,
+            "active_users": active_users,
+            "blocked_users": blocked_users,
+            "users_with_books": users_with_books,
+            "users_with_reviews": users_with_reviews,
+            "active_percentage": round((active_users / total_users) * 100, 2) if total_users > 0 else 0
+        }), 200
     
     except Exception as e:
         return internal_error(str(e))
+
+@admin_bp.route('/admin/dashboard/authors/stats', methods=['GET'])
+@jwt_required()
+def admin_authors_statistics():
+    """Obtener estadísticas de autores"""
+    try:
+        current_admin_id = get_jwt_identity()
+        current_admin = Admin.query.get(current_admin_id)
+
+        if not current_admin:
+            return unauthorized('No tiene permiso para ver estadísticas')
+        
+        total_authors = Author.query.count()
+        authors_with_books = db.session.query(func.count(func.distinct(Book.id_autor))).scalar()
+        
+        author_most_books = db.session.query(
+            Author, func.count(Book.id_libros).label('book_count')
+        ).join(Book).group_by(Author.id_autor).order_by(func.count(Book.id_libros).desc()).first()
+        
+        return jsonify({
+            "total_authors": total_authors,
+            "authors_with_books": authors_with_books,
+            "authors_without_books": total_authors - authors_with_books,
+            "top_author": {
+                "id_autor": author_most_books[0].id_autor if author_most_books else None,
+                "nombre_completo": f"{author_most_books[0].nombre_autor} {author_most_books[0].apellido_autor}" if author_most_books else None,
+                "total_libros": author_most_books[1] if author_most_books else 0
+            } if author_most_books else None
+        }), 200
+    
+    except Exception as e:
+        return internal_error(str(e))
+
+@admin_bp.route('/admin/dashboard/books/stats', methods=['GET'])
+@jwt_required()
+def admin_books_statistics():
+    """Obtener estadísticas de libros"""
+    try:
+        current_admin_id = get_jwt_identity()
+        current_admin = Admin.query.get(current_admin_id)
+
+        if not current_admin:
+            return unauthorized('No tiene permiso para ver estadísticas')
+        
+        total_books = Book.query.count()
+        books_with_reviews = db.session.query(func.count(func.distinct(Rating.id_libro))).scalar()
+        books_in_libraries = db.session.query(func.count(func.distinct(UserLibrary.id_libro))).scalar()
+        average_rating = db.session.query(func.avg(Rating.calificacion)).scalar() or 0
+        
+        return jsonify({
+            "total_books": total_books,
+            "books_with_reviews": books_with_reviews,
+            "books_in_libraries": books_in_libraries,
+            "average_rating": round(float(average_rating), 2),
+            "books_without_reviews": total_books - books_with_reviews
+        }), 200
+    
+    except Exception as e:
+        return internal_error(str(e))
+    # Agregar a admin.py
+
+@admin_bp.route('/admin/authors/<int:author_id>', methods=['GET'])
+@jwt_required()
+def admin_get_author_detail(author_id):
+    """Obtener detalles de un autor específico con sus libros"""
+    try:
+        current_admin_id = get_jwt_identity()
+        current_admin = Admin.query.get(current_admin_id)
+
+        if not current_admin:
+            return unauthorized('No tiene permiso para ver autores')
+        
+        author = Author.query.get_or_404(author_id)
+        books = Book.query.filter_by(id_autor=author_id).all()
+        
+        return jsonify({
+            'author': {
+                'id_autor': author.id_autor,
+                'nombre_autor': author.nombre_autor,
+                'apellido_autor': author.apellido_autor,
+                'biografia_autor': author.biografia_autor,
+                'created_at': author.created_at.isoformat() if author.created_at else None,
+                'updated_at': author.updated_at.isoformat() if author.updated_at else None
+            },
+            'books': [book.serialize() for book in books]
+        }), 200
+    
+    except Exception as e:
+        return not_found(str(e))
+
+@admin_bp.route('/admin/books/<int:book_id>', methods=['GET'])
+@jwt_required()
+def admin_get_book_detail(book_id):
+    """Obtener detalles de un libro específico"""
+    try:
+        current_admin_id = get_jwt_identity()
+        current_admin = Admin.query.get(current_admin_id)
+
+        if not current_admin:
+            return unauthorized('No tiene permiso para ver libros')
+        
+        book = Book.query.get_or_404(book_id)
+        return jsonify(book.serialize()), 200
+    
+    except Exception as e:
+        return not_found(str(e))
