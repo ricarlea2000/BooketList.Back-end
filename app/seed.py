@@ -11,6 +11,10 @@ from app.models.rating import Rating
 from app.models.user_library import UserLibrary
 import random
 from werkzeug.security import generate_password_hash
+from app.models.admin import Admin
+
+
+
 
 app = create_app()
 
@@ -24,6 +28,18 @@ def seed_database():
         Book.query.delete()
         Author.query.delete()
         User.query.delete()
+        Admin.query.delete()
+        
+        # ===== CREAR ADMIN PRINCIPAL =====
+        print("👨‍💼 Creando administrador principal...")
+        admin = Admin(
+            nombre_admin="Administrador Principal",
+            email_admin="admin@booketlist.com",
+            password_admin="admin123"  # Se hashea automáticamente en el modelo
+        )
+        db.session.add(admin)
+        db.session.commit()
+        print(f"✓ Admin creado - Email: {admin.email_admin}")
         
         print("👥 Creando autores reales...")
         autores_data = [
@@ -627,6 +643,7 @@ def seed_database():
         print("✓ Bibliotecas de usuarios creadas")
         
         print("🎉 Base de datos poblada con libros REALES!")
+        print(f"   - {Admin.query.count()} administradores")
         print(f"   - {len(autores)} autores famosos")
         print(f"   - {len(libros)} libros clásicos y contemporáneos") 
         print(f"   - {len(usuarios)} usuarios de prueba")
