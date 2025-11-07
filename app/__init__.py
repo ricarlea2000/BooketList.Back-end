@@ -27,7 +27,7 @@ def create_app():
                         "http://127.0.0.1:3000"
                     ],
                     "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-                    "allow_headers": ["Content-Type", "Authorization"],
+                    "allow_headers": ["Content-Type", "Authorization", "Access-Control-Allow-Origin"],
                     "supports_credentials": True
                 }
             })
