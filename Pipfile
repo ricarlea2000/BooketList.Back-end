@@ -23,7 +23,7 @@ python_version = "3.13"
 
 [scripts]
 dev = "flask run"
-seed = "python -m app.seed"
+db-seed = "python -m app.seed"
 db-init = "flask db init"
 db-migrate = "flask db migrate"
 db-upgrade = "flask db upgrade"
