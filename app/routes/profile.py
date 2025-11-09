@@ -1,6 +1,7 @@
+# profile.py (corregido)
 from flask import Blueprint, request, jsonify
 from app.models.user import User
-from app.models import UserLibrary, Rating, Book
+from app.models import UserLibrary, Rating, Book, Author
 from app import db
 from app.errors import bad_request, not_found, internal_error, conflict
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -50,11 +51,18 @@ def get_user_profile():
                 id_libro=item.id_libro
             ).first()
             
+            # Obtener nombre del autor
+            author_name = "Autor desconocido"
+            if book.id_autor:
+                author = Author.query.get(book.id_autor)
+                if author:
+                    author_name = f"{author.nombre_autor} {author.apellido_autor}"
+            
             book_data = {
-                'id': book.id_libro,
-                'title': book.titulo,
-                'author': book.autor,
-                'cover_url': book.cover_url
+                'id': book.id_libros,  # ✅ CORREGIDO
+                'title': book.titulo_libro,  # ✅ CORREGIDO
+                'author': author_name,  # ✅ CORREGIDO
+                'cover_url': book.enlace_portada_libro  # ✅ CORREGIDO
             }
             
             # Agregar calificación si existe
@@ -73,7 +81,8 @@ def get_user_profile():
         author_counts = {}
         for book in books_read:
             author = book['author']
-            author_counts[author] = author_counts.get(author, 0) + 1
+            if author != "Autor desconocido":
+                author_counts[author] = author_counts.get(author, 0) + 1
         
         top_authors = [
             {'name': author, 'booksCount': count}
@@ -92,8 +101,8 @@ def get_user_profile():
             if book and review.resena:  # Solo incluir si hay reseña escrita
                 reviews_data.append({
                     'id': review.id_calificacion,
-                    'bookId': book.id_libro,
-                    'bookTitle': book.titulo,
+                    'bookId': book.id_libros,  # ✅ CORREGIDO
+                    'bookTitle': book.titulo_libro,  # ✅ CORREGIDO
                     'rating': review.calificacion,
                     'comment': review.resena,
                     'date': review.created_at.strftime('%Y-%m-%d') if review.created_at else None,
@@ -121,6 +130,7 @@ def get_user_profile():
         return jsonify(profile_data), 200
         
     except Exception as e:
+        print(f"Error en get_user_profile: {str(e)}")  # Para debugging
         return internal_error(str(e))
 
 

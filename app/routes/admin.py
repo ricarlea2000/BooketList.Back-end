@@ -232,7 +232,8 @@ def admin_get_user_reviews(user_id):
                 'book': {
                     'id_libros': book.id_libros if book else None,
                     'titulo_libro': book.titulo_libro if book else 'Libro no encontrado',
-                    'autor': f"{book.autor.nombre_autor} {book.autor.apellido_autor}" if book and book.autor else 'Autor desconocido'
+                    'autor': f"{book.autor.nombre_autor} {book.autor.apellido_autor}" if book and book.autor else 'Autor desconocido',
+                    'enlace_portada_libro': book.enlace_portada_libro if book else None
                 },
                 'calificacion': review.calificacion,
                 'resena': review.resena,
@@ -253,7 +254,7 @@ def admin_get_user_reviews(user_id):
 @admin_bp.route('/admin/users/<int:user_id>/library', methods=['GET'])
 @jwt_required()
 def admin_get_user_library(user_id):
-    """Obtener toda la biblioteca de un usuario específico"""
+    """Obtener toda la biblioteca de un usuario específico (incluyendo libros leídos)"""
     try:
         current_admin_id = get_jwt_identity()
         current_admin = Admin.query.get(current_admin_id)
@@ -263,9 +264,15 @@ def admin_get_user_library(user_id):
         
         user = User.query.get_or_404(user_id)
         
+        # ✅ Obtener libros de UserLibrary (quiero_leer y leyendo)
         library_items = UserLibrary.query.filter_by(id_usuario=user_id).all()
         
+        # ✅ Obtener libros leídos de Rating
+        read_books = Rating.query.filter_by(id_usuario=user_id).all()
+        
         library_data = []
+        
+        # Procesar libros de UserLibrary
         for item in library_items:
             book = Book.query.get(item.id_libro)
             if book:
@@ -279,10 +286,31 @@ def admin_get_user_library(user_id):
                         'enlace_portada_libro': book.enlace_portada_libro
                     },
                     'estado_lectura': item.estado_lectura,
-                    'added_at': item.created_at.isoformat() if item.created_at else None
+                    'added_at': item.created_at.isoformat() if item.created_at else None,
+                    'source': 'user_library'  # Para identificar de dónde viene
                 })
         
-        # Estadísticas por estado de lectura
+        # Procesar libros leídos de Rating
+        for rating in read_books:
+            book = Book.query.get(rating.id_libro)
+            if book:
+                library_data.append({
+                    'id_calificacion': rating.id_calificacion,
+                    'book': {
+                        'id_libros': book.id_libros,
+                        'titulo_libro': book.titulo_libro,
+                        'autor': f"{book.autor.nombre_autor} {book.autor.apellido_autor}" if book.autor else 'Autor desconocido',
+                        'genero_libro': book.genero_libro,
+                        'enlace_portada_libro': book.enlace_portada_libro
+                    },
+                    'estado_lectura': 'leido',
+                    'calificacion': rating.calificacion,
+                    'resena': rating.resena,
+                    'added_at': rating.created_at.isoformat() if rating.created_at else None,
+                    'source': 'rating'  # Para identificar de dónde viene
+                })
+        
+        # Estadísticas por estado de lectura (ahora incluye libros leídos)
         stats = {
             'total_books': len(library_data),
             'quiero_leer': len([item for item in library_data if item['estado_lectura'] == 'quiero_leer']),
@@ -303,7 +331,7 @@ def admin_get_user_library(user_id):
 @admin_bp.route('/admin/users/<int:user_id>/stats', methods=['GET'])
 @jwt_required()
 def admin_get_user_stats(user_id):
-    """Obtener estadísticas completas de un usuario"""
+    """Obtener estadísticas completas de un usuario (incluyendo libros leídos)"""
     try:
         current_admin_id = get_jwt_identity()
         current_admin = Admin.query.get(current_admin_id)
@@ -316,17 +344,34 @@ def admin_get_user_stats(user_id):
         # Contar reseñas
         total_reviews = Rating.query.filter_by(id_usuario=user_id).count()
         
-        # Contar libros en biblioteca por estado
+        # ✅ Contar libros en UserLibrary por estado
         library_stats = db.session.query(
             UserLibrary.estado_lectura,
             func.count(UserLibrary.id_biblioteca).label('count')
         ).filter_by(id_usuario=user_id).group_by(UserLibrary.estado_lectura).all()
         
-        stats_dict = {'quiero_leer': 0, 'leyendo': 0, 'leido': 0}
+        # ✅ Contar libros leídos en Rating
+        read_books_count = Rating.query.filter_by(id_usuario=user_id).count()
+        
+        stats_dict = {'quiero_leer': 0, 'leyendo': 0, 'leido': read_books_count}
+        
+        # Sumar los libros de UserLibrary
         for estado, count in library_stats:
             stats_dict[estado] = count
         
         total_books = sum(stats_dict.values())
+        
+        # ✅ Obtener información adicional sobre reseñas
+        reviews_with_rating = Rating.query.filter(
+            Rating.id_usuario == user_id,
+            Rating.calificacion.isnot(None)
+        ).count()
+        
+        reviews_with_text = Rating.query.filter(
+            Rating.id_usuario == user_id,
+            Rating.resena.isnot(None),
+            Rating.resena != ''
+        ).count()
         
         return jsonify({
             'user_id': user_id,
@@ -334,7 +379,12 @@ def admin_get_user_stats(user_id):
             'stats': {
                 'total_books': total_books,
                 'total_reviews': total_reviews,
-                'reading_status': stats_dict
+                'reading_status': stats_dict,
+                'reviews_detail': {
+                    'with_rating': reviews_with_rating,
+                    'with_text': reviews_with_text,
+                    'without_rating': total_reviews - reviews_with_rating
+                }
             }
         }), 200
     

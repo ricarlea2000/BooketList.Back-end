@@ -21,8 +21,8 @@ def register():
             return conflict('El correo electrónico ya está registrado')
         
         # ✅ Verificar si el nombre de usuario ya existe
-        if User.query.filter_by(nombre_usuario=data['username']).first():
-            return conflict('El nombre de usuario ya existe')
+        #if User.query.filter_by(nombre_usuario=data['username']).first():
+            #return conflict('El nombre de usuario ya existe')
         
         # ✅ Crear usuario con los campos correctos de tu modelo
         usuario = User(
@@ -57,20 +57,20 @@ def login():
         password = data.get('password_usuario')
         
         if not email or not password:
-            return bad_request('Email y contraseña requeridos')
+            return jsonify({'error': 'Email y contraseña requeridos'}), 400
         
         user = User.query.filter_by(email_usuario=email).first()
         
         if not user:
-            return unauthorized('Credenciales inválidas')
+            return jsonify({'error': 'Credenciales inválidas'}), 401
         
-        # ✅ Verificar si el usuario está bloqueado
+        # ✅ Verificar si el usuario está activo
         if not user.is_active:
-            return unauthorized('Cuenta bloqueada. Contacta al administrador.')
+            return jsonify({'error': 'Tu cuenta ha sido bloqueada. Por favor, contacta al administrador.'}), 401
         
         # ✅ Verificar contraseña con check_password_hash
         if not check_password_hash(user.password_usuario, password):
-            return unauthorized('Credenciales inválidas')
+            return jsonify({'error': 'Credenciales inválidas'}), 401
         
         # ✅ Crear token
         access_token = create_access_token(identity=str(user.id_usuario))
@@ -82,4 +82,4 @@ def login():
         }), 200
         
     except Exception as e:
-        return internal_error(str(e))
+        return jsonify({'error': 'Error interno del servidor'}), 500
