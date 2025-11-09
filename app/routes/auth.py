@@ -21,8 +21,8 @@ def register():
             return conflict('El correo electrónico ya está registrado')
         
         # ✅ Verificar si el nombre de usuario ya existe
-        #if User.query.filter_by(nombre_usuario=data['username']).first():
-            #return conflict('El nombre de usuario ya existe')
+        # if User.query.filter_by(nombre_usuario=data['username']).first():
+        #     return conflict('El nombre de usuario ya existe')
         
         # ✅ Crear usuario con los campos correctos de tu modelo
         usuario = User(
