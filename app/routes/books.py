@@ -241,3 +241,71 @@ def get_authors():
     except Exception as e:
         return internal_error(str(e))
     
+@books_bp.route('/books/<int:book_id>/reviews', methods=['GET'])
+def get_book_reviews(book_id):
+    """
+    Obtener todas las reseñas de un libro específico
+    EXCLUYE reseñas de usuarios bloqueados (is_active = False)
+    """
+    try:
+        # Verificar que el libro existe
+        book = Book.query.get_or_404(book_id)
+        
+        # Obtener solo reseñas de usuarios activos
+        from app.models import Rating, User
+        reviews = Rating.query.filter_by(id_libro=book_id)\
+            .join(User)\
+            .filter(User.is_active == True)\
+            .order_by(Rating.created_at.desc())\
+            .all()
+        
+        reviews_data = []
+        for review in reviews:
+            # Obtener nombre completo del usuario
+            nombre_completo = f"{review.usuario.nombre_usuario} {review.usuario.apellido_usuario}"
+            
+            reviews_data.append({
+                'id_calificacion': review.id_calificacion,
+                'calificacion': review.calificacion,
+                'resena': review.resena,
+                'created_at': review.created_at.isoformat() if review.created_at else None,
+                'usuario_nombre_completo': nombre_completo,  # ✅ Campo directo
+                'usuario_id': review.usuario.id_usuario
+            })
+        
+        return jsonify(reviews_data), 200
+    
+    except Exception as e:
+        return internal_error(str(e))
+
+@books_bp.route('/books/<int:book_id>/reviews/stats', methods=['GET'])
+def get_book_reviews_stats(book_id):
+    """
+    Obtener estadísticas básicas de reseñas de un libro
+    EXCLUYE reseñas de usuarios bloqueados
+    """
+    try:
+        from app.models import Rating, User
+        
+        # Solo estadísticas básicas
+        total_reviews = db.session.query(Rating)\
+            .join(User)\
+            .filter(Rating.id_libro == book_id)\
+            .filter(User.is_active == True)\
+            .count()
+        
+        # Calificación promedio solo de usuarios activos
+        avg_rating = db.session.query(func.avg(Rating.calificacion))\
+            .join(User)\
+            .filter(Rating.id_libro == book_id)\
+            .filter(User.is_active == True)\
+            .filter(Rating.calificacion.isnot(None))\
+            .scalar() or 0
+        
+        return jsonify({
+            'total_reviews': total_reviews,
+            'average_rating': round(float(avg_rating), 2)
+        }), 200
+    
+    except Exception as e:
+        return internal_error(str(e))
